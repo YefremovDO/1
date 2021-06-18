@@ -1,0 +1,588 @@
+#include <iostream>
+#include <fstream>
+#include <string.h>
+#include <Windows.h>
+#include  <cstdlib>
+using namespace std;
+
+class Document
+{
+public:
+    string document_type, document_name, company_name, signature;
+    int doc_numb;
+    int day, month, year;
+
+    virtual void Info() = 0;
+    virtual void WriteToFile() = 0;
+    virtual void ReadFromFile() = 0;
+    virtual void DeleteFromFile() = 0;
+};
+
+class Receipt : Document
+{
+public:
+    void Info() override
+    {
+        cout << document_type << endl;
+        cout << "Номер документу: " << doc_numb << endl;
+        cout << "Назва квитанції: " << document_name << endl;
+        cout << "Компанія, що видала: " << company_name << endl;
+        cout << "Підпис: " << signature << endl;
+        cout << "Дата: " << day << "." << month << "." << year << endl << endl;
+    }
+
+    Receipt(string document_type, int doc_numb, string document_name, string company_name, string signature, int day, int month, int year)
+    {
+        this->document_type = "Квитанція";
+        this->doc_numb = doc_numb;
+        this->document_name = document_name;
+        this->company_name = company_name;
+        this->signature = signature;
+        this->day = day;
+        this->month = month;
+        this->year = year;
+    }
+    Receipt()
+    { }
+    void WriteToFile() override
+    {
+        Receipt rec;
+        ofstream fout;
+        document_type = "Квитанція";
+        fout.open(document_type, ofstream::app);
+        if (!fout.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "Введiть номер документу:" << endl;
+            cin >> doc_numb;
+            document_type = "Квитанція";
+
+            cout << "Назва квитанціі: ";
+            cin >> document_name;
+
+            cout << "Яка Компанія видала: ";
+            cin >> company_name;
+
+            cout << "Чий пiдпис: ";
+            cin >> signature;
+
+            cout << "Дата: день ";
+            cin >> day;
+            cout << "місяць ";
+            cin >> month;
+            cout << "рік ";
+            cin >> year;
+
+            cout << "\nФайл додається..." << endl;
+
+            Receipt rec(document_type,  doc_numb, document_name,  company_name, signature, day, month, year);
+           fout.write((char*)&rec, sizeof(Receipt));
+            cout << "\nФайл додано." << endl;
+            rec.Info();
+            fout.close();
+        }
+    }
+    void ReadFromFile() override
+    {
+        int n;
+        Receipt rec;
+        ifstream fin;
+        fin.open("Квитанція", ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття Файла." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для пошуку:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            cout << "Зчитування файлу..." << endl;
+            while (!fin.eof())
+            {
+                fin.read((char*)&rec, sizeof(Receipt));
+                if (rec.doc_numb == n)
+                {
+                    cout << " знайдено." << endl;
+                    rec.Info();
+                }
+                else
+                {
+                    cout << "Рахунка з таким номером немає." << endl;
+                }
+            }  fin.close();
+
+        }
+
+        
+    }
+    void DeleteFromFile() override
+    {
+        int n;
+        Receipt rec;
+        ofstream fout;
+        fout.open("Квитанція_temp", ofstream::out);
+        if (!fout.is_open())
+        {
+            cout << "Помилка відкриття файл." << endl;
+            system("pause");
+        }
+        ifstream fin;
+        document_type = "Квитанція";
+        fin.open(document_type, ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для видалення:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            while (!fin.eof())
+            {
+                fin.read((char*)&rec, sizeof(Receipt));
+                rec.Info();
+                if (rec.doc_numb != n)
+                {
+                    fout.write((char*)&rec, sizeof(Receipt));
+                    rec.Info();
+                }
+            } fout.close();
+            fin.close();
+
+            if (remove("Квитанція")) 
+            { 
+                cout << "Видалено";
+            }
+            else
+                std::cout << "Помилка видалення файлу";
+            // 
+            cout << "Квитанціі з таким номером немає." << endl;
+        }
+    }
+};
+class Waybill : Document
+{
+public:
+    void Info() override
+    {
+        cout << document_type << endl;
+        cout << "Номер документу: " << doc_numb << endl;
+        cout << "Назва накладної: " << document_name << endl;
+        cout << "Компанія, що видала: " << company_name << endl;
+        cout << "Підпис: " << signature << endl;
+        cout << "Дата: " << day << "." << month << "." << year << endl << endl;
+    }
+
+    Waybill(string document_type, int doc_numb, string document_name, string company_name, string signature, int day, int month, int year)
+    {
+        this->document_type = "Накладна";
+        this->doc_numb = doc_numb;
+        this->document_name = document_name;
+        this->company_name = company_name;
+        this->signature = signature;
+        this->day = day;
+        this->month = month;
+        this->year = year;
+    }
+    Waybill()
+    { }
+    void WriteToFile() override
+    {
+        Waybill way;
+        ofstream fout;
+        document_type = "Накладна";
+        fout.open(document_type, ofstream::app);
+        if (!fout.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            way.Info();
+            cout << "Файл відкрито." << endl;
+            cout << "Введiть номер документу: " << endl;
+            cin >> doc_numb;
+            cout << "\nНазва накладноі: ";
+            cin >> document_name;
+            cout << "\nЯка Компанія видала: ";
+            cin >> company_name;
+            cout << "\nЧий пiдпис: ";
+            cin >> signature;
+            cout << "\nДата: день ";
+            cin >> day;
+            cout << "місяць ";
+            cin >> month;
+            cout << "рік ";
+            cin >> year;
+
+            way.Info();
+            fout.write((char*)&way, sizeof(Waybill));
+            fout.close();
+        };
+    }
+
+    void ReadFromFile() override
+    {
+        int n;
+        Waybill way;
+        ifstream fin;
+        fin.open("Накладна", ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для пошуку:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            while (!fin.eof())
+            {
+                 fin.read((char*)&way, sizeof(Waybill));
+                if (way.doc_numb == n)
+                {
+                    cout << "Накладна знайдена." << endl;
+                    way.Info();
+                 }
+                else
+                {
+                    cout << "Рахунка з таким номером немає." << endl;
+                }
+            }     fin.close();
+        };
+    }
+    void DeleteFromFile() override
+    {
+        int n;
+        Waybill way;
+        ofstream fout;
+        fout.open("Накладна_temp", ofstream::out);
+        ifstream fin;
+        fin.open("Накладна", ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для видалення:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            while (!fin.eof())
+            {
+                fin.read((char*)&way, sizeof(Waybill));
+                if (way.doc_numb != n)
+                {
+                    fout.write((char*)&way, sizeof(Waybill));
+                }
+            } fout.close();
+            fin.close();
+
+            if (remove("Накладна")) 
+            {                            
+                cout << "Видалено";
+            }
+            else
+            {
+                cout << "Помилка видалення файлу\n";
+            }
+            cout << "Накладноі з таким номером немає." << endl;
+        }
+    }
+};
+class Invoice : Document
+{
+public:
+    void Info() override
+    {
+        cout << document_type << endl;
+        cout << "Номер документу: " << doc_numb << endl;
+        cout << "Назва рахунку: " << document_name << endl;
+        cout << "Компанія, що видала: " << company_name << endl;
+        cout << "Підпис: " << signature << endl;
+        cout << "Дата: " << day << "." << month << "." << year << endl << endl;
+    }
+
+    Invoice(string document_type, int doc_numb, string document_name, string company_name, string signature, int day, int month, int year)
+    {
+        this->document_type = "Рахунок";
+        this->doc_numb = doc_numb;
+        this->document_name = document_name;
+        this->company_name = company_name;
+        this->signature = signature;
+        this->day = day;
+        this->month = month;
+        this->year = year;
+    }
+    Invoice()
+    { }
+    void WriteToFile() override
+    {
+        Invoice inv;
+        ofstream fout;
+        document_type = "Рахунок";
+        fout.open(document_type, ofstream::app);
+        if (!fout.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "Введiть номер документу:" << endl;
+            cin >> doc_numb;
+            cout << "\nНазва рахунку: ";
+            cin >> document_name;
+            cout << "\nЯка Компанія видала: ";
+            cin >> company_name;
+            cout << "\nЧий пiдпис: ";
+            cin >> signature;
+            cout << "\nДата: день ";
+            cin >> day;
+            cout << "місяць ";
+            cin >> month;
+            cout << "рік ";
+            cin >> year;
+            fout.write((char*)&inv, sizeof(Invoice));
+            fout.close();
+        }
+    }
+
+    void ReadFromFile() override
+    {
+        int n;
+        Invoice inv;
+        ifstream fin;
+        fin.open("Рахунок", ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для пошуку:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            cout << "Зчитування файлу..." << endl;
+            while (!fin.eof())
+            {
+                fin.read((char*)&inv, sizeof(Invoice));
+                if (inv.doc_numb == n)
+                {
+                    cout << "Рахунок знайдено." << endl;
+                    inv.Info();
+                    fin.close();
+                }
+                else
+                {
+                    cout << "Рахунка з таким номером немає." << endl;
+                }
+            }
+        }
+    }
+
+    void DeleteFromFile() override
+    {
+        int n;
+        Invoice inv;
+        ofstream fout;
+        fout.open("Рахунок_temp", ofstream::out);
+        ifstream fin;
+        fin.open("Рахунок", ios::in);
+        if (!fin.is_open())
+        {
+            cout << "Помилка відкриття файлу." << endl;
+            system("pause");
+        }
+        else
+        {
+            cout << "\nВведiть номер документу для видалення:" << endl;
+            cout << ">>>> ";
+            cin >> n;
+            while (!fin.eof())
+            {
+                fin.read((char*)&inv, sizeof(Invoice));
+                if (inv.doc_numb != n)
+                {
+                    fout.write((char*)&inv, sizeof(Invoice));
+                }
+            } fout.close();
+            fin.close();
+
+            if (remove("Рахунок")) 
+            {                
+                cout << "Видалено";
+            }
+            else
+               cout << "Помилка видалення файлу";
+        }
+    }
+};
+
+int menu()
+{
+    int variant;
+    cout << "\nВиберіть варіант діі.\n" << endl;
+    cout << "1.Пошук." << endl;
+    cout << "2.Добавити." << endl;
+    cout << "3.Видалити." << endl;
+    cout << "4.Кiнец роботи." << endl;
+    cout << ">>>> ";
+    cin >> variant;
+    return variant;
+}
+
+int main()
+{
+    int a, b, n;
+    char oldfilename[10];
+    char newfilename[10];
+
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+
+    cout << "Маємо документи:" << endl;
+    ofstream fout;
+    fout.open("Квитанція", ofstream::out);
+    Receipt rec("Квитанція", 1, "Квитанція про сплату штрафу", "ГУДКСУ м.Києва", "Васильєв", 5, 11, 2019);
+    rec.Info();
+    fout.write((char*)&rec, sizeof(Receipt));
+    fout.close();
+
+    fout.open("Накладна", ofstream::out);
+    Waybill way("Накладна", 2, "Накладна на відпуск", "Сільпо", "Герасименко", 10, 7, 2020);
+    way.Info();
+    fout.write((char*)&way, sizeof(Waybill));
+    fout.close();
+
+    fout.open("Рахунок", ofstream::out);
+    Invoice inv("Рахунок", 3, "Рахунок за комунальні послуги", "ТОВ ЗАПОРIЖГАЗ ЗБУТ", "Лаврін", 15, 8, 2017);
+    inv.Info();
+    fout.write((char*)&inv, sizeof(Invoice));
+    Invoice inv2("Рахунок", 4, "Рахунок за газ", "ВОЛИНЬГАЗ", "Олександров", 22, 2, 2022);
+    inv2.Info();
+    fout.write((char*)&inv2, sizeof(Invoice));
+    fout.close();
+    cout << "\nДокументи записані до файлів архіву." << endl;
+
+    Document* document;
+
+    while (true)
+    {
+        int variant = menu();
+        switch (variant)
+        {
+        case 1:
+            cout << "\nВведiть Тип документу:" << endl;
+            cout << "1. Квитанція." << endl;
+            cout << "2. Накладна." << endl;
+            cout << "3. Рахунок." << endl;
+            cout << ">>>> ";
+            cin >> b;
+
+            if (b == 1)
+            {
+                cout << "\nВибор = " << b << " = Квитанція" << endl;
+                Receipt rec;
+                rec.ReadFromFile();
+            }
+            else
+                if (b == 2)
+                {
+                    cout << "\nВибор = " << b << " = Накладна" << endl;
+                    Waybill way;
+                    way.ReadFromFile();
+                }
+            if (b == 3)
+            {
+                cout << "\nВибор = " << b << " = Рахунок" << endl;
+                Invoice inv;
+                inv.ReadFromFile();
+            }
+            break;
+        case 2:
+            cout << "Введiть який документ додається:" << endl;
+            cout << "1. Квитанція." << endl;
+            cout << "2. Накладна." << endl;
+            cout << "3. Рахунок." << endl;
+            cout << ">>>> ";
+            cin >> b;
+
+            if (b == 1)
+            {
+                cout << "Вибор = " << b << " = Квитанція." << endl;
+                Receipt rec;
+                rec.WriteToFile();
+                cout << endl;
+            }
+            else
+                if (b == 2)
+                {
+                    cout << "Вибор = " << b << " = Накладна." << endl;
+                    Waybill way;
+                    way.WriteToFile();
+                    cout << endl;
+                }
+            if (b == 3)
+            {
+                cout << "Вибор = " << b << " = Рахунок." << endl;
+                Invoice inv;
+                inv.WriteToFile();
+                cout << endl;
+
+                cout << "До файлу додано" << endl;
+            }
+            break;
+        case 3:
+            cout << "Введiть тип документу:" << endl;
+            cout << "1. Квитанція." << endl;
+            cout << "2. Накладна." << endl;
+            cout << "3. Рахунок." << endl;
+            cout << ">>>> ";
+            cin >> b;
+
+            if (b == 1)
+            {
+                Receipt rec;
+                rec.DeleteFromFile();
+            }
+            else
+                if (b == 2)
+                {
+                    cout << "\nВибор = " << b << " = Накладна" << endl;
+                    Waybill way;
+                    way.DeleteFromFile();
+                }
+            if (b == 3)
+            {
+                cout << "\nВибор = " << b << " = Рахунок" << endl;
+                Invoice inv;
+                inv.DeleteFromFile();
+            }
+            break;
+        case 4:
+            cout << "Вихід з меню." << endl;
+            exit(EXIT_SUCCESS);
+            break;
+
+        default:
+            cerr << "Невірний варіант." << endl;
+            exit(EXIT_FAILURE);
+
+        }
+    }
+    system("pause");
+    return 0;
+}
